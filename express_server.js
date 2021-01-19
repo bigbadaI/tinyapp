@@ -38,18 +38,23 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
+//deletes a url from urlDatabase
 app.post("/urls/:shortURL/delete", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   const shortUrl = templateVars.shortURL;
   delete urlDatabase[shortUrl],
   res.redirect("/urls");
 });
+
+//sends user to the short url shows page
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   
   res.render("urls_show", templateVars);
 });
 
+//sends the user to the correct corresponding long url page
 app.get("/u/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   const longUrl = templateVars.longURL;
