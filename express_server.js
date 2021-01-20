@@ -13,7 +13,7 @@ const generateRandomString = function() {
 };
 
   
-const users = {
+const usersDatabase = {
   "randonUserID": {
     id: "randomUserID",
     email: "randomUser@gmail.uk",
@@ -33,7 +33,7 @@ const urlDatabase = {
 
 //used to load create new urls page
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
+  const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
   res.render("urls_new", templateVars);
 });
 
@@ -47,26 +47,29 @@ app.post("/urls", (req, res) => {
 
 //used to load the main url page
 app.get("/urls", (req, res) => {
-  const templateVars = {urls: urlDatabase, username: req.cookies["username"]};
+  let templateVars = {user: usersDatabase[req.cookies["user_Id"]], urls: urlDatabase, users: usersDatabase};
+  
+    
+  
   res.render("urls_index", templateVars);
 });
 
 //get to req to send the user to the registeration page
 app.get("/register", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
+  const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
   res.render("register", templateVars);
 });
 
 //register page post to register the user create unique id and redirect them to the main /urls page
 app.post("/register", (req, res) => {
   let newId = generateRandomString();
-  users[newId] = {
+  usersDatabase[newId] = {
     id: newId,
     email: req.body.email,
     password: req.body.password
   };
-  res.cookie(newId);
-  console.log(users);
+  res.cookie("user_Id", usersDatabase[newId].id);
+  console.log(usersDatabase);
   res.redirect("/urls");
 });
 
@@ -102,7 +105,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie();
   res.redirect("/urls");
 });
 
