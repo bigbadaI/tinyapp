@@ -19,16 +19,18 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+//This page was just for testing purposes
+// app.get("/", (req, res) => {
+//   res.send("Hello");
+// });
 
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
-
+//used to load create new urls page
 app.get("/urls/new", (req, res) => {
   const templateVars = {username: req.cookies["username"]};
   res.render("urls_new", templateVars);
 });
 
+//post method for creating new url by giving it a random short string and returning user to the main urls page
 app.post("/urls", (req, res) => {
   console.log(req.body);
   let smallUrl = generateRandomString();
@@ -36,11 +38,16 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${smallUrl}`);
 });
 
+//used to load the main url page
 app.get("/urls", (req, res) => {
   const templateVars = {urls: urlDatabase, username: req.cookies["username"]};
   res.render("urls_index", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  const templateVars = {username: req.cookies["username"]};
+  res.render("register", templateVars);
+});
 
 //deletes a url from urlDatabase
 app.post("/urls/:shortURL/delete", (req, res) => {
