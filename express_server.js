@@ -44,7 +44,12 @@ const urlDatabase = {
 //used to load create new urls page
 app.get("/urls/new", (req, res) => {
   const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
-  res.render("urls_new", templateVars);
+  if (templateVars.user) {
+    res.render("urls_new", templateVars);
+    console.log(templateVars.user.id);
+  } else {
+    res.redirect("/urls");
+  }
 });
 
 //post method for creating new url by giving it a random short string and returning user to the main urls page
@@ -73,7 +78,7 @@ app.get("/register", (req, res) => {
 //register page post to register the user create unique id and redirect them to the main /urls page
 app.post("/register", (req, res) => {
   if (doesEmailAlreadyExist(req.body.email)) {
-    res.statusCode(400);
+    res.status(400);
     res.redirect("/error");
   }
   if (req.body.email === "" || req.body.password === "") {
@@ -87,7 +92,7 @@ app.post("/register", (req, res) => {
     password: req.body.password
   };
   res.cookie("user_Id", usersDatabase[newId].id);
-  console.log(usersDatabase);
+  // console.log(usersDatabase);
   res.redirect("/urls");
 });
 
@@ -138,7 +143,7 @@ app.post("/login", (req, res) => {
   //   password: req.body.password
   // };
   // res.cookie("user_Id", usersDatabase[newId].id);
-  console.log(usersDatabase);
+  // console.log(usersDatabase);
 
 });
 
