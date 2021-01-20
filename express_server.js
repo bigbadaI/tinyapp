@@ -73,6 +73,11 @@ app.get("/register", (req, res) => {
 //register page post to register the user create unique id and redirect them to the main /urls page
 app.post("/register", (req, res) => {
   if (doesEmailAlreadyExist(req.body.email)) {
+    res.statusCode(400);
+    res.redirect("/error");
+  }
+  if (req.body.email === "" || req.body.password === "") {
+    res.status(400);
     res.redirect("/error");
   }
   let newId = generateRandomString();
@@ -118,7 +123,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie();
+  res.clearCookie("user_Id");
   res.redirect("/urls");
 });
 
@@ -130,7 +135,8 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get('/*/', (req, res) => {
-  res.render("errors");
+  const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
+  res.render("error", templateVars);
 });
 
 // app.get("/urls.json", (req, res) => {
