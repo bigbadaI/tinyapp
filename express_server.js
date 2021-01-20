@@ -12,6 +12,16 @@ const generateRandomString = function() {
   return Math.random().toString(36).substr(6);
 };
 
+const doesEmailAlreadyExist = function(registerEmail) {
+  let emailArray = Object.keys(usersDatabase);
+  for (let i = 0; i < emailArray.length; i++) {
+    if (usersDatabase[emailArray[i]].email === registerEmail) {
+      return true;
+    }
+  }
+  return false;
+};
+
   
 const usersDatabase = {
   "randonUserID": {
@@ -62,6 +72,9 @@ app.get("/register", (req, res) => {
 
 //register page post to register the user create unique id and redirect them to the main /urls page
 app.post("/register", (req, res) => {
+  if (doesEmailAlreadyExist(req.body.email)) {
+    res.redirect("/error");
+  }
   let newId = generateRandomString();
   usersDatabase[newId] = {
     id: newId,
@@ -116,14 +129,17 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longUrl);
 });
 
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+app.get('/*/', (req, res) => {
+  res.render("errors");
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</></body></html>\n");
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
+
+// app.get("/hello", (req, res) => {
+//   res.send("<html><body>Hello <b>World</></body></html>\n");
+// });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
