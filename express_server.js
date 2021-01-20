@@ -13,7 +13,14 @@ const generateRandomString = function() {
 };
 
   
+const users = {
+  "randonUserID": {
+    id: "randomUserID",
+    email: "randomUser@gmail.uk",
+    password: "oneCupOfSugar"
+  }
 
+};
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -44,9 +51,23 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//get to req to send the user to the registeration page
 app.get("/register", (req, res) => {
   const templateVars = {username: req.cookies["username"]};
   res.render("register", templateVars);
+});
+
+//register page post to register the user create unique id and redirect them to the main /urls page
+app.post("/register", (req, res) => {
+  let newId = generateRandomString();
+  users[newId] = {
+    id: newId,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie(newId);
+  console.log(users);
+  res.redirect("/urls");
 });
 
 //deletes a url from urlDatabase
