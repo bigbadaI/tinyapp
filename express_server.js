@@ -16,7 +16,7 @@ const doesEmailAlreadyExist = function(registerEmail) {
   let emailArray = Object.keys(usersDatabase);
   for (let i = 0; i < emailArray.length; i++) {
     if (usersDatabase[emailArray[i]].email === registerEmail) {
-      return true;
+      return emailArray[i];
     }
   }
   return false;
@@ -110,16 +110,36 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //sends user to the short url shows page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: usersDatabase[req.cookies["user_Id"]]};
   
   res.render("urls_show", templateVars);
 });
 
-app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+//get that sends the user to the login in page
+app.get("/login", (req, res) => {
+  const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
+  res.render("login", templateVars);
+});
 
-  console.log(req.body.username);
-  res.redirect("/urls");
+app.post("/login", (req, res) => {
+  if (doesEmailAlreadyExist(req.body.email)) {
+    if (usersDatabase[doesEmailAlreadyExist(req.body.email)].password === req.body.password) {
+      res.cookie("user_Id", doesEmailAlreadyExist(req.body.email));
+      res.redirect("/urls");
+    }
+  }
+  res.status(403);
+  res.redirect("/error");
+  
+  // let newId = generateRandomString();
+  // usersDatabase[newId] = {
+  //   id: newId,
+  //   email: req.body.email,
+  //   password: req.body.password
+  // };
+  // res.cookie("user_Id", usersDatabase[newId].id);
+  console.log(usersDatabase);
+
 });
 
 app.post("/logout", (req, res) => {

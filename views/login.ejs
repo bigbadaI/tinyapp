@@ -11,10 +11,20 @@
 <body>
   <%- include('partials/_header') %>
 
-  <input class="form-control" type="text" name="username" placeholder="Username" style="width: 300px; margin: 1em">
-  <form class="form-inline" action="/login" method="GET">
-    <div>
-      <label for="Username"></label>
-      <button type="submit" class="btn btn-primary">Login</button>
+    <div class="text-center">
+      <div class="card-header"></div>
+      <h4 class="card-title">TinyURL Registration</h4>
     </div>
-  </form>
+    <form class="form-inline" action="/login" method="POST">
+      <div class="center">
+        <label for="email"><b>Email</b></label>
+        <input class= "form-control" type="email" name="email" placeholder="Please Enter Email" style="width: 300px; margin: 1em">
+        <label for="password"><b>Password</b></label>
+        <input class="form-control" type="password" name="password" placeholder="Please Enter Password" style="width: 300px; margin: 1em">
+        <br>
+        <button type="submit"  class="btn btn-primary">Login</button>
+      </form>
+  
+    </div>
+  </body>
+  </html>
