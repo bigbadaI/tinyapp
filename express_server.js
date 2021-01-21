@@ -127,10 +127,14 @@ app.post("/register", (req, res) => {
 
 //deletes a url from urlDatabase
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
-  const shortUrl = templateVars.shortURL;
-  delete urlDatabase[shortUrl],
-  res.redirect("/urls");
+  if (isUserSignedIn(req)) {
+    const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+    const shortUrl = templateVars.shortURL;
+    delete urlDatabase[shortUrl],
+    res.redirect("/urls");
+  } else {
+    res.redirect("/error");
+  }
 });
 
 //edit the long url of an existing short url
