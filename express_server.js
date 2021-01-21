@@ -165,7 +165,7 @@ app.post("/login", (req, res) => {
   let tempPass = req.body.password;
   if (doesEmailAlreadyExist(req.body.email)) {
     if (bcrypt.compareSync(tempPass, usersDatabase[doesEmailAlreadyExist(req.body.email)].password)) {
-      req.session[doesEmailAlreadyExist(req.body.email)];
+      req.session.username = [doesEmailAlreadyExist(req.body.email)];
       res.redirect("/urls");
     }
   }
