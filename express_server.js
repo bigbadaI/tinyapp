@@ -120,6 +120,9 @@ app.post("/login", (req, res) => {
     if (bcrypt.compareSync(tempPass, helper.usersDatabase[username].password)) {
       req.session.username = username;
       res.redirect("/urls");
+    } else {
+      res.status(403);
+      res.redirect("/error");
     }
   } else {
     res.status(403);
