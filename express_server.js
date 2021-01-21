@@ -65,7 +65,7 @@ app.post("/urls", (req, res) => {
 
 //used to load the main url page
 app.get("/urls", (req, res) => {
-  let templateVars = {user: usersDatabase[req.cookies["user_Id"]], urls: urlDatabase, users: usersDatabase};
+  let templateVars = {user: usersDatabase[req.cookies["user_Id"]], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
