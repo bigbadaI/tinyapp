@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; //default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcrypt");
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -43,13 +44,14 @@ const isUserSignedIn = function(req) {
     return false;
   }
 };
-
+// const userPassword = "okThen";
+// const userDatabasePassword = bcrypt.hashSync(userPassword, 10);
 //Basic object databases for reference and testing
 const usersDatabase = {
   "randonUserID": {
     id: "randomUserID",
     email: "randomUser@gmail.uk",
-    password: "oneCupOfSugar"
+    password: "$2b$05$pULVmgcx5coHNBqVZn0TDe57gFp19td8c4bIi1WMitxIr5eeKgLIW"
   }
 };
 
@@ -105,10 +107,12 @@ app.post("/register", (req, res) => {
     res.redirect("/error");
   }
   let newId = generateRandomString();
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(req.body.password, salt);
   usersDatabase[newId] = {
     id: newId,
     email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   };
   res.cookie("user_Id", usersDatabase[newId].id);
   res.redirect("/urls");
@@ -153,12 +157,16 @@ app.get("/login", (req, res) => {
 
 //post that checks if the user is already a registered user and if so checks password and if all good creates cookie and signs the user in
 app.post("/login", (req, res) => {
+  let tempPass = req.body.password;
   if (doesEmailAlreadyExist(req.body.email)) {
-    if (usersDatabase[doesEmailAlreadyExist(req.body.email)].password === req.body.password) {
+    console.log(usersDatabase[doesEmailAlreadyExist(req.body.email)].password, req.body.password);
+    if (bcrypt.compareSync(tempPass, usersDatabase[doesEmailAlreadyExist(req.body.email)].password)) {
       res.cookie("user_Id", doesEmailAlreadyExist(req.body.email));
       res.redirect("/urls");
+      console.log(usersDatabase[doesEmailAlreadyExist(req.body.email)].password);
     }
   }
+  
   res.status(403);
   res.redirect("/error");
 });
