@@ -22,6 +22,29 @@ const doesEmailAlreadyExist = function(registerEmail) {
   return false;
 };
 
+const urlsForUser = function(id) {
+  let tempObj = {};
+  let tempId = id;
+  let keyArray = Object.keys(urlDatabase);
+  for (let i = 0; i < keyArray.length; i++) {
+    // console.log(keyArray[i], id.id);
+    if (urlDatabase[keyArray[i]].userID === tempId) {
+      tempObj[keyArray[i]] = { longURL: urlDatabase[keyArray[i]].longURL};
+      // console.log(keyArray[i]);
+    }
+  }
+  return tempObj;
+};
+
+const isUserSignedIn = function(req) {
+  const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
+  if (templateVars.user) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
   
 const usersDatabase = {
   "randonUserID": {
@@ -44,9 +67,9 @@ const urlDatabase = {
 //used to load create new urls page
 app.get("/urls/new", (req, res) => {
   const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
-  if (templateVars.user) {
+  if (isUserSignedIn(req)) {
     res.render("urls_new", templateVars);
-    console.log(templateVars.user.id);
+    // console.log(templateVars.user.id);
   } else {
     res.redirect("/urls");
   }
@@ -54,18 +77,24 @@ app.get("/urls/new", (req, res) => {
 
 //post method for creating new url by giving it a random short string and returning user to the main urls page
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
   let urlid = generateRandomString();
   let userid = templateVars.user.id;
   urlDatabase[urlid] = { longURL: req.body.longURL, userID: userid};
-  console.log(urlDatabase);
   res.redirect(`/urls`);
 });
 
 //used to load the main url page
 app.get("/urls", (req, res) => {
-  let templateVars = {user: usersDatabase[req.cookies["user_Id"]], urls: urlDatabase };
+  let userTemp = usersDatabase[req.cookies["user_Id"]];
+  let templateVars = {user: usersDatabase[req.cookies["user_Id"]],
+    urls: ""};
+  if (isUserSignedIn(req)) {
+    templateVars = {user: usersDatabase[req.cookies["user_Id"]], urls: urlsForUser(userTemp.id) };
+
+  }
+  console.log(urlsForUser(userTemp));
   res.render("urls_index", templateVars);
 });
 
@@ -155,7 +184,7 @@ app.post("/logout", (req, res) => {
 
 //sends the user to the correct corresponding long url page
 app.get("/u/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
   const longUrl = templateVars.longURL;
   res.redirect(longUrl);
 });
