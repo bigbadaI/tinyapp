@@ -33,8 +33,8 @@ const usersDatabase = {
 };
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: {longURL: "http://www.lighthouselabs.ca", userID: "randomUserID" },
+  "9sm5xK": {longURL: "http://www.google.com", userID: "randomUserID" }
 };
 //This page was just for testing purposes
 // app.get("/", (req, res) => {
@@ -55,17 +55,17 @@ app.get("/urls/new", (req, res) => {
 //post method for creating new url by giving it a random short string and returning user to the main urls page
 app.post("/urls", (req, res) => {
   console.log(req.body);
-  let smallUrl = generateRandomString();
-  urlDatabase[smallUrl] = req.body.longURL,
-  res.redirect(`/urls/${smallUrl}`);
+  const templateVars = {user: usersDatabase[req.cookies["user_Id"]]};
+  let urlid = generateRandomString();
+  let userid = templateVars.user.id;
+  urlDatabase[urlid] = { longURL: req.body.longURL, userID: userid};
+  console.log(urlDatabase);
+  res.redirect(`/urls`);
 });
 
 //used to load the main url page
 app.get("/urls", (req, res) => {
   let templateVars = {user: usersDatabase[req.cookies["user_Id"]], urls: urlDatabase, users: usersDatabase};
-  
-    
-  
   res.render("urls_index", templateVars);
 });
 
@@ -126,6 +126,7 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
+//post that checks if the user is already a registered user and if so checks password and if all good creates cookie and signs the user in
 app.post("/login", (req, res) => {
   if (doesEmailAlreadyExist(req.body.email)) {
     if (usersDatabase[doesEmailAlreadyExist(req.body.email)].password === req.body.password) {
