@@ -72,7 +72,6 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
   req.session.username = helper.usersDatabase[newId].id;
-  console.log(req.session.username);
   res.redirect("/urls");
 });
 
@@ -117,15 +116,15 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let tempPass = req.body.password;
   let username = helper.doesEmailAlreadyExist(req.body.email, helper.usersDatabase);
-  console.log(username);
   if (username) {
     if (bcrypt.compareSync(tempPass, helper.usersDatabase[username].password)) {
       req.session.username = username;
       res.redirect("/urls");
     }
+  } else {
+    res.status(403);
+    res.redirect("/error");
   }
-  res.status(403);
-  res.redirect("/error");
 });
 
 app.post("/logout", (req, res) => {
