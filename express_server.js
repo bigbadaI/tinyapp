@@ -150,7 +150,7 @@ app.post("/urls/:shortURL", (req, res) => {
 //sends user to the short url shows page
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {user: usersDatabase[req.session.username], longURL: urlDatabase[req.params.shortURL].longURL, shortURL: req.params.shortURL};
-  console.log(usersDatabase[req.cookies["user_Id"].id]);
+  // console.log(usersDatabase[req.cookies["user_Id"].id]);
   res.render("urls_show", templateVars);
 });
 
