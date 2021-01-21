@@ -42,7 +42,7 @@ app.get("/urls", (req, res) => {
   let templateVars = {user: helper.usersDatabase[req.session.username],
     urls: ""};
   if (helper.isUserSignedIn(req)) {
-    templateVars = {user: helper.usersDatabase[req.session.username], urls: helper.urlsForUser(userTemp)};
+    templateVars = {user: helper.usersDatabase[req.session.username], urls: helper.urlsForUser(userTemp, helper.urlDatabase)};
   }
   res.render("urls_index", templateVars);
 });

@@ -11,7 +11,7 @@ const usersDatabase = {
 
 const urlDatabase = {
   b2xVn2: {longURL: "http://www.lighthouselabs.ca", userID: "randomUserID" },
-  "9sm5xK": {longURL: "http://www.google.com", userID: "randomUserID" }
+  tsm5xK: {longURL: "http://www.google.com", userID: "randomUserID" }
 };
 
 const generateRandomString = function() {
@@ -21,19 +21,19 @@ const generateRandomString = function() {
 const doesEmailAlreadyExist = function(email, database) {
   let emailArray = Object.keys(database);
   for (let i = 0; i < emailArray.length; i++) {
-    if (usersDatabase[emailArray[i]].email === email) {
+    if (database[emailArray[i]].email === email) {
       return emailArray[i];
     }
   }
-  return false;
+  return undefined;
 };
 
-const urlsForUser = function(id) {
+const urlsForUser = function(id, object) {
   let tempObj = {};
-  let keyArray = Object.keys(urlDatabase);
+  let keyArray = Object.keys(object);
   for (let i = 0; i < keyArray.length; i++) {
-    if (urlDatabase[keyArray[i]].userID === id) {
-      tempObj[keyArray[i]] = { longURL: urlDatabase[keyArray[i]].longURL};
+    if (object[keyArray[i]].userID === id) {
+      tempObj[keyArray[i]] = { longURL: object[keyArray[i]].longURL, userID : object[keyArray[i]].userID};
     }
   }
   return tempObj;
