@@ -5,7 +5,9 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const helper = require('./helper');
+const methodOverride = require("method-override");
 
+app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(cookieSession({
@@ -75,8 +77,21 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+
+//edit the long url of an existing short url
+app.put("/urls/:shortURL", (req, res) => {
+  if (helper.isUserSignedIn(req)) {
+    const templateVars = { shortURL: req.params.shortURL, longURL: helper.urlDatabase[req.params.shortURL].longURL};
+    const shortUrl = templateVars.shortURL;
+    helper.urlDatabase[shortUrl].longURL = req.body.longURL,
+    res.redirect("/urls");
+  } else {
+    res.redirect("/error");
+  }
+});
+
 //deletes a url from urlDatabase
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   if (helper.isUserSignedIn(req)) {
     const templateVars = { shortURL: req.params.shortURL, longURL: helper.urlDatabase[req.params.shortURL]};
     const shortUrl = templateVars.shortURL;
@@ -86,19 +101,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.redirect("/error");
   }
 });
-
-//edit the long url of an existing short url
-app.post("/urls/:shortURL", (req, res) => {
-  if (helper.isUserSignedIn(req)) {
-    const templateVars = { shortURL: req.params.shortURL, longURL: helper.urlDatabase[req.params.shortURL].longURL};
-    const shortUrl = templateVars.shortURL;
-    helper.urlDatabase[shortUrl] = req.body.longURL,
-    res.redirect("/urls");
-  } else {
-    res.redirect("/error");
-  }
-});
-
 //sends user to the short url shows page
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {user: helper.usersDatabase[req.session.username], longURL: helper.urlDatabase[req.params.shortURL].longURL, shortURL: req.params.shortURL};
